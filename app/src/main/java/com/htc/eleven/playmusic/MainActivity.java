@@ -1,6 +1,7 @@
 package com.htc.eleven.playmusic;
 
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
@@ -22,6 +23,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private final static String[] ReadPermission = new String[]{"android.permission.READ_EXTERNAL_STORAGE","android.permission.WRITE_EXTERNAL_STORAGE"};
 
+    private final static String mMusicFIle = "test.mp3";
+    private AssetFileDescriptor mFd = null;
+
     private Button mStart = null;
     private Button mStop = null;
     private MediaPlayer player = null;
@@ -41,6 +45,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ActivityCompat.requestPermissions(MainActivity.this, ReadPermission, mRequestCode);
         }
 
+        // use AssertFileDescriptor to access music file.
+        try {
+            mFd = getResources().getAssets().openFd(mMusicFIle);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         mStart = (Button) findViewById(R.id.btnPlay);
         mStop = (Button) findViewById(R.id.btnStop);
         mStart.setOnClickListener(this);
@@ -118,7 +128,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            player.setDataSource("/sdcard/Music/test.mp3");
 //            System.out.println(path + "eleven ======");
 //            player.setDataSource("/data/test.mp3");
-            player.setDataSource(path);
+//            player.setDataSource(path);
+
+            // use AssertFileDescriptor to setDataSource().
+            player.setDataSource(mFd);
         } catch (IOException e) {
             e.printStackTrace();
         }
